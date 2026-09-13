@@ -4,7 +4,12 @@ Manages bank customers: registration, retrieval, listing and update. One half of
 pair of co-dependent microservices — the other, the account service, owns accounts
 and is a separate deployable with its own database.
 
-Built with Java 21, Spring Boot 4.1.1, PostgreSQL, Flyway and Kafka.
+Built with Java 21, Spring Boot 4.1.1, Spring Data JPA, Spring Security,
+PostgreSQL, Flyway and Kafka.
+
+**Contents:** [Running it](#running-it) · [Project structure](#project-structure) ·
+[API](#api) · [Design decisions](#design-decisions) · [Events](#events) ·
+[Testing](#testing) · [Assumptions](#assumptions) · [Shortcomings](#shortcomings)
 
 ---
 
@@ -14,7 +19,7 @@ Built with Java 21, Spring Boot 4.1.1, PostgreSQL, Flyway and Kafka.
 optional — see [Events](#events).
 
 ```bash
-# Defaults to Postgres and Kafka on localhost.
+# Runs with the dev profile by default: local Postgres/Kafka, no env vars needed.
 ./mvnw spring-boot:run
 
 # Tests plus the coverage report (target/site/jacoco/index.html)
@@ -28,6 +33,43 @@ Flyway creates the schema on first start; there is no `ddl-auto: update` anywher
 | `http://localhost:8080/swagger-ui.html` | Swagger UI |
 | `http://localhost:8080/v3/api-docs` | OpenAPI 3 specification |
 
+### Profiles
+
+`spring.profiles.default` is `dev`, so running with no `-Dspring.profiles.active`
+still works out of the box.
+
+| Profile | Datasource | Logging |
+|---|---|---|
+| `dev` (default) | localhost, with sensible defaults if unset | `DEBUG` + SQL logging |
+| `prod` | no defaults — `DB_URL`/`DB_USERNAME`/`DB_PASSWORD` are required | `WARN`, no SQL logging |
+
+`prod`'s missing defaults are deliberate: a deployment that forgets `DB_PASSWORD`
+fails to start with a clear error instead of silently running against whatever
+the default would have been.
+
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
+# -> fails fast: 'url' must start with "jdbc" — DB_URL was never set
+```
+
+### Security
+
+Every endpoint requires HTTP Basic auth except Swagger. Two roles:
+
+| User | Password | Can |
+|---|---|---|
+| `viewer` | `viewer` (dev default) | `GET` only |
+| `admin` | `admin` (dev default) | `GET`, `POST`, `PUT` |
+
+```bash
+curl -u admin:admin -X POST http://localhost:8080/api/v1/customers -H "Content-Type: application/json" -d '{...}'
+curl -u viewer:viewer http://localhost:8080/api/v1/customers/1000001
+```
+
+In Swagger UI, click **Authorize** (top right) and enter a username/password —
+every "Try it out" call then carries it automatically. A request with no
+credentials gets `401`; `viewer` attempting a write gets `403`.
+
 ### Configuration
 
 Every setting has a working local default and can be overridden by an
@@ -35,10 +77,29 @@ environment variable.
 
 | Variable | Default |
 |---|---|
-| `DB_URL` | `jdbc:postgresql://localhost:5432/customer_db` |
-| `DB_USERNAME` / `DB_PASSWORD` | `postgres` / `54321` |
+| `DB_URL` | `jdbc:postgresql://localhost:5432/customer_db` (dev only) |
+| `DB_USERNAME` / `DB_PASSWORD` | `postgres` / `54321` (dev only) |
+| `VIEWER_PASSWORD` / `ADMIN_PASSWORD` | `viewer` / `admin` (dev only) |
 | `KAFKA_BOOTSTRAP_SERVERS` | `localhost:9092` |
 | `SERVER_PORT` | `8080` |
+
+---
+
+## Project structure
+
+```
+com.bank.customer
+├── domain/      Customer, Address, CustomerType — the entity and its value types
+├── repository/  CustomerRepository — Spring Data JPA
+├── service/     CustomerService — use cases, transactions, the entity/DTO boundary
+├── web/         CustomerController, GlobalExceptionHandler
+│   └── dto/     Request/response records, kept separate from the entity
+├── event/       CustomerEvent, CustomerEventPublisher — the Kafka producer
+└── config/      OpenApiConfig, SecurityConfig
+```
+
+Each package has one job; `service` is the only layer that knows both the entity
+and the API contract. `db/migration/` holds the Flyway SQL that owns the schema.
 
 ---
 
@@ -174,7 +235,7 @@ Kafka is optional in development.
 ## Testing
 
 ```
-./mvnw clean verify      # 47 tests, 91% line coverage, fails below 70%
+./mvnw clean verify      # 49 tests, 91% line coverage, fails below 70%
 ```
 
 JaCoCo enforces the 70% line coverage the task asks for; the build fails below
@@ -186,7 +247,7 @@ it. Coverage report: `target/site/jacoco/index.html`.
 | `CustomerRepositoryTest` | `@DataJpaTest` against the **real Flyway migration** on H2 |
 | `CustomerServiceTest` | Business rules with the repository and publisher mocked |
 | `CustomerServiceIntegrationTest` | The service against a real database and real transactions |
-| `CustomerControllerTest` | `@WebMvcTest`: status codes, JSON shape, validation |
+| `CustomerControllerTest` | `@WebMvcTest`: status codes, JSON shape, validation, and role-based access |
 | `CustomerEventPublisherTest` | What lands on the topic, and both broker failure modes |
 | `CustomerServiceApplicationTests` | The whole context starts |
 
@@ -231,8 +292,9 @@ Things I would fix before this went anywhere near production:
 - **No delete endpoint.** Deleting a customer who still has accounts is not a
   decision this service can make alone; it needs the account service, and the
   orchestration is out of scope.
-- **No authentication.** Every endpoint is open. A real deployment would put an
-  OAuth2 resource server in front of it.
+- **In-memory users, not a real identity provider.** Fine for demonstrating the
+  security mechanics; a real deployment would swap `InMemoryUserDetailsManager`
+  for an OAuth2 resource server, which changes `SecurityConfig` alone.
 - **Tests use H2, not Postgres.** Fast and Docker-free, but H2 in PostgreSQL mode
   is not Postgres. Testcontainers would run the tests against the real engine.
 - **No optimistic locking.** Two concurrent `PUT`s to the same customer, last

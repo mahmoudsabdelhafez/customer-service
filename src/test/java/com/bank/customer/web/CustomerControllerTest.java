@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.bank.customer.config.SecurityConfig;
 import com.bank.customer.domain.CustomerType;
 import com.bank.customer.exception.CustomerNotFoundException;
 import com.bank.customer.exception.DuplicateLegalIdException;
@@ -31,13 +32,14 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import tools.jackson.databind.json.JsonMapper;
 
 /** The web layer on its own: the service is mocked, status codes and JSON shape are tested. */
 @WebMvcTest(CustomerController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({SecurityConfig.class, GlobalExceptionHandler.class})
 class CustomerControllerTest {
 
     @Autowired
@@ -67,6 +69,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("POST returns 201 with a Location header and the created customer")
     void createReturnsCreated() throws Exception {
         given(customerService.create(any())).willReturn(response());
@@ -82,6 +85,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("POST returns 400 and lists every invalid field")
     void createRejectsInvalidBody() throws Exception {
         CreateCustomerRequest invalid = new CreateCustomerRequest(
@@ -104,6 +108,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("POST returns 409 when the legal id is taken")
     void createReportsDuplicateLegalId() throws Exception {
         willThrow(new DuplicateLegalIdException("29001011234567"))
@@ -118,6 +123,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "VIEWER")
     @DisplayName("GET by id returns the customer")
     void getByIdReturnsCustomer() throws Exception {
         given(customerService.getById(1000001L)).willReturn(response());
@@ -129,6 +135,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "VIEWER")
     @DisplayName("GET by id returns 404 for an unknown customer")
     void getByIdReturnsNotFound() throws Exception {
         willThrow(new CustomerNotFoundException(9999999L)).given(customerService).getById(9999999L);
@@ -140,6 +147,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "VIEWER")
     @DisplayName("GET the collection returns a page and passes the type filter through")
     void listReturnsPage() throws Exception {
         given(customerService.list(eq(CustomerType.RETAIL), any()))
@@ -152,6 +160,7 @@ class CustomerControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     @DisplayName("PUT returns the updated customer")
     void updateReturnsCustomer() throws Exception {
         given(customerService.update(eq(1000001L), any())).willReturn(response());
@@ -169,5 +178,24 @@ class CustomerControllerTest {
                         .content(body))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1000001));
+    }
+
+    @Test
+    @DisplayName("an anonymous caller gets 401")
+    void anonymousIsUnauthorised() throws Exception {
+        mockMvc.perform(get("/api/v1/customers/1000001"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = "VIEWER")
+    @DisplayName("a read-only caller may not create customers")
+    void viewerMayNotWrite() throws Exception {
+        mockMvc.perform(post("/api/v1/customers")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json(createRequest())))
+                .andExpect(status().isForbidden());
+
+        verify(customerService, never()).create(any());
     }
 }

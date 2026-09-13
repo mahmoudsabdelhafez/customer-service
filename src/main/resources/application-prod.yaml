@@ -1,0 +1,20 @@
+# Production. No credential defaults on purpose: a missing DB_PASSWORD must stop
+# the application from starting rather than silently fall back to a known value.
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    show-sql: false
+
+app:
+  security:
+    viewer-password: ${VIEWER_PASSWORD}
+    admin-password: ${ADMIN_PASSWORD}
+
+logging:
+  level:
+    root: WARN
+    com.bank.customer: INFO

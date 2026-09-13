@@ -1,0 +1,23 @@
+# Local development. Defaults point at Postgres on localhost so the service
+# starts with no environment variables set.
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/customer_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:54321}
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  security:
+    # Throwaway credentials for local use only.
+    viewer-password: ${VIEWER_PASSWORD:viewer}
+    admin-password: ${ADMIN_PASSWORD:admin}
+
+logging:
+  level:
+    com.bank.customer: DEBUG

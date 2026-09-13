@@ -1,17 +1,17 @@
-# Every value can be overridden by an environment variable.
+# Settings shared by every environment. Environment-specific values (database
+# credentials, log levels) live in application-<profile>.yaml.
 spring:
   application:
     name: customer-service
+
+  profiles:
+    # Running with no -Dspring.profiles.active still gets a usable local setup.
+    default: dev
 
   # Java 21 virtual threads: each request gets its own, no thread pool tuning needed.
   threads:
     virtual:
       enabled: true
-
-  datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/customer_db}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:54321}
 
   jpa:
     # Schema is owned by Flyway; Hibernate only validates it matches.
@@ -41,7 +41,3 @@ server:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-
-logging:
-  level:
-    com.bank.customer: INFO

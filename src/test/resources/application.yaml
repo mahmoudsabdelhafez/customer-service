@@ -21,3 +21,6 @@ spring:
 app:
   kafka:
     customer-events-topic: customer-events
+  security:
+    viewer-password: viewer
+    admin-password: admin
