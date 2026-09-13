@@ -1,0 +1,23 @@
+# Replaces application.yaml for the test run. Flyway stays on and ddl-auto is
+# validate, so tests run against the real production schema.
+spring:
+  application:
+    name: customer-service
+
+  datasource:
+    url: jdbc:h2:mem:customer_db;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
+app:
+  kafka:
+    customer-events-topic: customer-events

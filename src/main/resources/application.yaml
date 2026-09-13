@@ -1,0 +1,47 @@
+# Every value can be overridden by an environment variable.
+spring:
+  application:
+    name: customer-service
+
+  # Java 21 virtual threads: each request gets its own, no thread pool tuning needed.
+  threads:
+    virtual:
+      enabled: true
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/customer_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:54321}
+
+  jpa:
+    # Schema is owned by Flyway; Hibernate only validates it matches.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+  flyway:
+    enabled: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        # Avoid the default 60s block when no broker is reachable.
+        max.block.ms: 5000
+
+app:
+  kafka:
+    customer-events-topic: customer-events
+
+server:
+  port: ${SERVER_PORT:8080}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.bank.customer: INFO
