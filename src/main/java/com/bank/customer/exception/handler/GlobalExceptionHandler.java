@@ -1,4 +1,4 @@
-package com.bank.customer.web;
+package com.bank.customer.exception.handler;
 
 import com.bank.customer.exception.CustomerNotFoundException;
 import com.bank.customer.exception.DuplicateLegalIdException;

@@ -1,6 +1,6 @@
 package com.bank.customer.event;
 
-import com.bank.customer.domain.Customer;
+import com.bank.customer.persistence.entity.Customer;
 import java.util.concurrent.Executor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

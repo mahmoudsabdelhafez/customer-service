@@ -2,7 +2,7 @@ package com.bank.customer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bank.customer.repository.CustomerRepository;
+import com.bank.customer.persistence.repository.CustomerRepository;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

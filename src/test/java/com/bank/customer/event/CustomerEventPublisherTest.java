@@ -7,9 +7,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import com.bank.customer.domain.Address;
-import com.bank.customer.domain.Customer;
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.persistence.entity.Address;
+import com.bank.customer.persistence.entity.Customer;
+import com.bank.customer.persistence.entity.CustomerType;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.junit.jupiter.api.DisplayName;

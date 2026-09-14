@@ -1,7 +1,7 @@
-package com.bank.customer.repository;
+package com.bank.customer.persistence.repository;
 
-import com.bank.customer.domain.Customer;
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.persistence.entity.Customer;
+import com.bank.customer.persistence.entity.CustomerType;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

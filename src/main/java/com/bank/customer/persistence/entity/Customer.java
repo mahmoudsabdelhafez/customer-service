@@ -1,4 +1,4 @@
-package com.bank.customer.domain;
+package com.bank.customer.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;

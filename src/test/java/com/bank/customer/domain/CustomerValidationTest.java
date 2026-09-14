@@ -2,6 +2,9 @@ package com.bank.customer.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bank.customer.persistence.entity.Address;
+import com.bank.customer.persistence.entity.Customer;
+import com.bank.customer.persistence.entity.CustomerType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

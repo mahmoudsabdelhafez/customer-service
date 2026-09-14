@@ -1,7 +1,7 @@
 package com.bank.customer.event;
 
-import com.bank.customer.domain.Customer;
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.persistence.entity.Customer;
+import com.bank.customer.persistence.entity.CustomerType;
 import java.time.Instant;
 
 /**

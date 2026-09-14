@@ -2,12 +2,12 @@ package com.bank.customer.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.persistence.entity.CustomerType;
 import com.bank.customer.event.CustomerEventPublisher;
-import com.bank.customer.web.dto.AddressDto;
-import com.bank.customer.web.dto.CreateCustomerRequest;
-import com.bank.customer.web.dto.CustomerResponse;
-import com.bank.customer.web.dto.UpdateCustomerRequest;
+import com.bank.customer.dto.AddressDto;
+import com.bank.customer.dto.CreateCustomerRequest;
+import com.bank.customer.dto.CustomerResponse;
+import com.bank.customer.dto.UpdateCustomerRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

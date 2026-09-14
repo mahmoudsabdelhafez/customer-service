@@ -1,10 +1,10 @@
-package com.bank.customer.web;
+package com.bank.customer.controller;
 
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.persistence.entity.CustomerType;
 import com.bank.customer.service.CustomerService;
-import com.bank.customer.web.dto.CreateCustomerRequest;
-import com.bank.customer.web.dto.CustomerResponse;
-import com.bank.customer.web.dto.UpdateCustomerRequest;
+import com.bank.customer.dto.CreateCustomerRequest;
+import com.bank.customer.dto.CustomerResponse;
+import com.bank.customer.dto.UpdateCustomerRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.Parameter;

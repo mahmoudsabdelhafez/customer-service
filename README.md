@@ -89,13 +89,16 @@ environment variable.
 
 ```
 com.bank.customer
-├── domain/      Customer, Address, CustomerType — the entity and its value types
-├── repository/  CustomerRepository — Spring Data JPA
-├── service/     CustomerService — use cases, transactions, the entity/DTO boundary
-├── web/         CustomerController, GlobalExceptionHandler
-│   └── dto/     Request/response records, kept separate from the entity
-├── event/       CustomerEvent, CustomerEventPublisher — the Kafka producer
-└── config/      OpenApiConfig, SecurityConfig
+├── controller/            CustomerController
+├── dto/                   Request/response records, kept separate from the entity
+├── service/               CustomerService — use cases, transactions, the entity/DTO boundary
+├── event/                 CustomerEvent, CustomerEventPublisher — the Kafka producer
+├── exception/             CustomerNotFoundException, DuplicateLegalIdException
+│   └── handler/           GlobalExceptionHandler
+├── persistence/
+│   ├── entity/            Customer, Address, CustomerType
+│   └── repository/        CustomerRepository — Spring Data JPA
+└── config/                OpenApiConfig, SecurityConfig
 ```
 
 Each package has one job; `service` is the only layer that knows both the entity

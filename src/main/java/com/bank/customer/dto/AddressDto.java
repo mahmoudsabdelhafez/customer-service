@@ -1,6 +1,6 @@
-package com.bank.customer.web.dto;
+package com.bank.customer.dto;
 
-import com.bank.customer.domain.Address;
+import com.bank.customer.persistence.entity.Address;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

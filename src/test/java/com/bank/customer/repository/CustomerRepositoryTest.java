@@ -3,9 +3,10 @@ package com.bank.customer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.bank.customer.domain.Address;
-import com.bank.customer.domain.Customer;
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.persistence.entity.Address;
+import com.bank.customer.persistence.entity.Customer;
+import com.bank.customer.persistence.entity.CustomerType;
+import com.bank.customer.persistence.repository.CustomerRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

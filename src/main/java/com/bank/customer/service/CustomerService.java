@@ -1,14 +1,14 @@
 package com.bank.customer.service;
 
-import com.bank.customer.domain.Customer;
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.persistence.entity.Customer;
+import com.bank.customer.persistence.entity.CustomerType;
 import com.bank.customer.event.CustomerEventPublisher;
 import com.bank.customer.exception.CustomerNotFoundException;
 import com.bank.customer.exception.DuplicateLegalIdException;
-import com.bank.customer.repository.CustomerRepository;
-import com.bank.customer.web.dto.CreateCustomerRequest;
-import com.bank.customer.web.dto.CustomerResponse;
-import com.bank.customer.web.dto.UpdateCustomerRequest;
+import com.bank.customer.persistence.repository.CustomerRepository;
+import com.bank.customer.dto.CreateCustomerRequest;
+import com.bank.customer.dto.CustomerResponse;
+import com.bank.customer.dto.UpdateCustomerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;

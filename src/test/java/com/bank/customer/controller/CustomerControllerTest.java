@@ -1,4 +1,4 @@
-package com.bank.customer.web;
+package com.bank.customer.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -15,13 +15,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.bank.customer.config.SecurityConfig;
-import com.bank.customer.domain.CustomerType;
+import com.bank.customer.exception.handler.GlobalExceptionHandler;
+import com.bank.customer.persistence.entity.CustomerType;
 import com.bank.customer.exception.CustomerNotFoundException;
 import com.bank.customer.exception.DuplicateLegalIdException;
 import com.bank.customer.service.CustomerService;
-import com.bank.customer.web.dto.AddressDto;
-import com.bank.customer.web.dto.CreateCustomerRequest;
-import com.bank.customer.web.dto.CustomerResponse;
+import com.bank.customer.dto.AddressDto;
+import com.bank.customer.dto.CreateCustomerRequest;
+import com.bank.customer.dto.CustomerResponse;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
